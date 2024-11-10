@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recuperar Dirección</title>
     <style>
-        /* Estilos para mostrar el texto grande y legible */
         .resultado {
             font-size: 2em;
             color: black;
@@ -18,38 +17,37 @@
     <div id="mensaje" class="resultado">Buscando dirección...</div>
 
     <script>
-        // Función para intentar obtener la dirección cada 3 segundos
-        let attemptCounter = 0;
-        const maxAttempts = 10; // Número máximo de intentos (puedes ajustarlo)
-        const retryInterval = 3000; // Intervalo de 3 segundos
-
-        // Función para intentar obtener el texto de la dirección
+        let attemptCounter = 0;  // Contador de intentos
+        const maxAttempts = 10;   // Número máximo de intentos
+        const retryInterval = 3000; // Intervalo de 3 segundos entre intentos
+        
         function tryGetAddress() {
-            attemptCounter++; // Aumenta el contador de intentos
+            attemptCounter++; // Incrementar el contador de intentos
+
+            // Seleccionamos el elemento usando el selector CSS más simple
             const widgetDiv = document.querySelector('.MuiBox-root.css-0 .MuiTypography-root.MuiTypography-caption.MuiTypography-alignLeft');
-            
+
             if (!widgetDiv) {
-                document.getElementById('mensaje').textContent = 'Error: No se encontró el elemento con la clase especificada.';
-                return; // Detenemos si no se encuentra el elemento
+                document.getElementById('mensaje').textContent = `Error: No se encontró el elemento. Intento ${attemptCounter} de ${maxAttempts}`;
+                if (attemptCounter >= maxAttempts) {
+                    document.getElementById('mensaje').textContent = 'Error: No se pudo encontrar la dirección después de varios intentos.';
+                    clearInterval(retryTimer); // Detenemos el temporizador después de los intentos
+                }
+                return; // Si no se encuentra el elemento, reintentar
             }
 
+            // Obtener el texto de la dirección
             const addressText = widgetDiv.textContent.trim();
-            
+
             if (addressText && addressText.includes("0x")) {
                 document.getElementById('mensaje').textContent = 'Dirección encontrada: ' + addressText;
-                clearInterval(retryTimer); // Detener intentos una vez que se encuentra la dirección
+                clearInterval(retryTimer); // Detenemos el temporizador cuando se encuentra la dirección
             } else {
-                document.getElementById('mensaje').textContent = 'Intentando... ' + attemptCounter + ' intento(s)';
-                
-                // Si superamos el número máximo de intentos, mostramos un error
-                if (attemptCounter >= maxAttempts) {
-                    document.getElementById('mensaje').textContent = 'Error: No se pudo encontrar una dirección válida después de varios intentos.';
-                    clearInterval(retryTimer); // Detener intentos después de alcanzar el límite
-                }
+                document.getElementById('mensaje').textContent = `Buscando... Intento ${attemptCounter} de ${maxAttempts}`;
             }
         }
 
-        // Configuramos el intervalo para intentar cada 3 segundos
+        // Configurar el temporizador para reintentar cada 3 segundos
         const retryTimer = setInterval(tryGetAddress, retryInterval);
     </script>
 </body>
