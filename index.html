@@ -4,27 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recuperar Dirección</title>
+    <style>
+        /* Estilos para mostrar el texto grande y legible */
+        .resultado {
+            font-size: 2em;
+            color: black;
+            text-align: center;
+            margin-top: 20%;
+        }
+    </style>
 </head>
 <body>
-    <!-- Script para obtener y mostrar la dirección -->
+    <div id="mensaje" class="resultado">Buscando dirección...</div>
+
     <script>
         try {
+            // Selecciona el elemento con la clase específica
             const widgetDiv = document.querySelector('.MuiTypography-root.MuiTypography-caption.MuiTypography-alignLeft.css-19wakw1');
+
+            // Verifica si el elemento fue encontrado
             if (!widgetDiv) {
                 throw new Error('No se encontró el elemento con la clase especificada.');
             }
+
+            // Obtén el texto dentro del div
             const addressText = widgetDiv.textContent;
+            
+            // Valida que el texto coincida con el formato de dirección "0x...03691"
             const addressRegex = /0x[a-fA-F0-9]{4,}\.\.\.[a-fA-F0-9]{5}/;
             if (!addressRegex.test(addressText)) {
                 throw new Error('El texto no coincide con el formato esperado de dirección.');
             }
-            console.log('Dirección encontrada:', addressText);
+
+            // Si todo está correcto, muestra la dirección en pantalla
+            document.getElementById('mensaje').textContent = 'Dirección encontrada: ' + addressText;
         } catch (error) {
-            if (error.message.includes('bloqueado')) {
-                console.error('Error: JavaScript parece estar bloqueado en esta página.');
-            } else {
-                console.error(error.message);
-            }
+            // Muestra el mensaje de error en pantalla
+            let errorMessage = error.message.includes('bloqueado') 
+                ? 'Error: JavaScript parece estar bloqueado en esta página.'
+                : error.message;
+            document.getElementById('mensaje').textContent = errorMessage;
         }
     </script>
 </body>
