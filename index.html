@@ -1,46 +1,40 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mostrar Dirección</title>
-    <style>
-        .resultado {
-            font-size: 2em;
-            color: black;
-            text-align: center;
-            margin-top: 20%;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prueba con Texto Dinámico</title>
 </head>
 <body>
+  <!-- Elemento donde está el código de la wallet -->
+  <div id="wallet-button">
+    <div>
+      <div class="MuiBox-root css-0">
+        <div class="MuiTypography-root MuiTypography-caption MuiTypography-alignLeft css-19wakw1">0x8ed0B...03691</div>
+      </div>
+    </div>
+  </div>
 
-    <!-- Contenedor para mostrar la dirección -->
-    <div id="mensaje" class="resultado">Buscando dirección...</div>
+  <!-- Enlace que usará la dirección extraída dinámicamente -->
+  <a id="dynamicLink" href="#" target="_blank">Visitar la dirección de la wallet</a>
 
-    <script>
-        // Función para recuperar la dirección y actualizar la UI
-        function mostrarDireccion() {
-            // Selecciona el elemento que contiene la dirección
-            const addressElement = document.querySelector('.MuiTypography-root.MuiTypography-caption.MuiTypography-alignLeft.css-19wakw1');
-            
-            const mensaje = document.getElementById('mensaje');
-            
-            if (addressElement) {
-                // Recupera el texto de la dirección
-                const address = addressElement.textContent.trim();
-                
-                // Muestra la dirección en el contenedor mensaje
-                mensaje.textContent = 'Dirección encontrada: ' + address;
-            } else {
-                // Si no se encuentra el elemento, muestra un mensaje de error
-                mensaje.textContent = 'No se encontró la dirección.';
-            }
-        }
+  <script>
+    // Seleccionamos el elemento que contiene el texto de la wallet
+    let walletText = document.querySelector("#wallet-button > div > div.MuiBox-root.css-0 > div.MuiTypography-root.MuiTypography-caption.MuiTypography-alignLeft.css-19wakw1");
 
-        // Llamar a la función cada 3 segundos para intentar recuperar la dirección
-        setInterval(mostrarDireccion, 3000);
-    </script>
+    // Verificamos si el elemento fue encontrado
+    if (walletText) {
+        let walletAddress = walletText.textContent.trim();  // Obtenemos el texto de la wallet
+        let dynamicLink = `https://somewebsite.com/address/${walletAddress}`;  // Creamos el enlace dinámico
 
+        // Actualizamos el atributo href del enlace en el HTML
+        document.getElementById("dynamicLink").href = dynamicLink;
+
+        // Imprimimos el enlace generado en la consola para depuración
+        console.log("Enlace actualizado: " + dynamicLink);  // Solo para verificación en consola
+    } else {
+        console.log("No se encontró el elemento con la dirección");
+    }
+  </script>
 </body>
 </html>
