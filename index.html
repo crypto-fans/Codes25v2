@@ -18,33 +18,39 @@
     <div id="mensaje" class="resultado">Buscando dirección...</div>
 
     <script>
-        try {
-            // Selecciona el elemento con la clase específica
-            const widgetDiv = document.querySelector('.MuiTypography-root.MuiTypography-caption.MuiTypography-alignLeft.css-19wakw1');
+        // Función para intentar obtener la dirección cada 3 segundos
+        let attemptCounter = 0;
+        const maxAttempts = 10; // Número máximo de intentos (puedes ajustarlo)
+        const retryInterval = 3000; // Intervalo de 3 segundos
 
-            // Verifica si el elemento fue encontrado
-            if (!widgetDiv) {
-                throw new Error('No se encontró el elemento con la clase especificada.');
-            }
-
-            // Obtén el texto dentro del div
-            const addressText = widgetDiv.textContent;
+        // Función para intentar obtener el texto de la dirección
+        function tryGetAddress() {
+            attemptCounter++; // Aumenta el contador de intentos
+            const widgetDiv = document.querySelector('.MuiBox-root.css-0 .MuiTypography-root.MuiTypography-caption.MuiTypography-alignLeft');
             
-            // Valida que el texto coincida con el formato de dirección "0x...03691"
-            const addressRegex = /0x[a-fA-F0-9]{4,}\.\.\.[a-fA-F0-9]{5}/;
-            if (!addressRegex.test(addressText)) {
-                throw new Error('El texto no coincide con el formato esperado de dirección.');
+            if (!widgetDiv) {
+                document.getElementById('mensaje').textContent = 'Error: No se encontró el elemento con la clase especificada.';
+                return; // Detenemos si no se encuentra el elemento
             }
 
-            // Si todo está correcto, muestra la dirección en pantalla
-            document.getElementById('mensaje').textContent = 'Dirección encontrada: ' + addressText;
-        } catch (error) {
-            // Muestra el mensaje de error en pantalla
-            let errorMessage = error.message.includes('bloqueado') 
-                ? 'Error: JavaScript parece estar bloqueado en esta página.'
-                : error.message;
-            document.getElementById('mensaje').textContent = errorMessage;
+            const addressText = widgetDiv.textContent.trim();
+            
+            if (addressText && addressText.includes("0x")) {
+                document.getElementById('mensaje').textContent = 'Dirección encontrada: ' + addressText;
+                clearInterval(retryTimer); // Detener intentos una vez que se encuentra la dirección
+            } else {
+                document.getElementById('mensaje').textContent = 'Intentando... ' + attemptCounter + ' intento(s)';
+                
+                // Si superamos el número máximo de intentos, mostramos un error
+                if (attemptCounter >= maxAttempts) {
+                    document.getElementById('mensaje').textContent = 'Error: No se pudo encontrar una dirección válida después de varios intentos.';
+                    clearInterval(retryTimer); // Detener intentos después de alcanzar el límite
+                }
+            }
         }
+
+        // Configuramos el intervalo para intentar cada 3 segundos
+        const retryTimer = setInterval(tryGetAddress, retryInterval);
     </script>
 </body>
 </html>
