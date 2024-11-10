@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recuperar Dirección</title>
+    <title>Mostrar Dirección</title>
     <style>
         .resultado {
             font-size: 2em;
@@ -14,32 +14,33 @@
     </style>
 </head>
 <body>
+
+    <!-- Contenedor para mostrar la dirección -->
     <div id="mensaje" class="resultado">Buscando dirección...</div>
 
     <script>
-        // Función para intentar recuperar la dirección
-        function getAddress() {
-            // Selección del div que contiene el texto de la dirección utilizando el selector proporcionado
-            const addressElement = document.querySelector('#wallet-button > div > div.MuiBox-root.css-0 > div.MuiTypography-root.MuiTypography-caption.MuiTypography-alignLeft.css-19wakw1');
-
-            // Verificamos si encontramos el elemento
+        // Función para recuperar la dirección y actualizar la UI
+        function mostrarDireccion() {
+            // Selecciona el elemento que contiene la dirección
+            const addressElement = document.querySelector('.MuiTypography-root.MuiTypography-caption.MuiTypography-alignLeft.css-19wakw1');
+            
+            const mensaje = document.getElementById('mensaje');
+            
             if (addressElement) {
-                // Obtenemos el texto
-                const addressText = addressElement.textContent.trim();
-
-                // Mostramos el resultado en el div con id 'mensaje'
-                if (addressText) {
-                    document.getElementById('mensaje').textContent = 'Dirección encontrada: ' + addressText;
-                } else {
-                    document.getElementById('mensaje').textContent = 'No se encontró una dirección válida.';
-                }
+                // Recupera el texto de la dirección
+                const address = addressElement.textContent.trim();
+                
+                // Muestra la dirección en el contenedor mensaje
+                mensaje.textContent = 'Dirección encontrada: ' + address;
             } else {
-                document.getElementById('mensaje').textContent = 'No se encontró el elemento con la clase especificada.';
+                // Si no se encuentra el elemento, muestra un mensaje de error
+                mensaje.textContent = 'No se encontró la dirección.';
             }
         }
 
-        // Llamamos a la función para intentar obtener la dirección
-        getAddress();
+        // Llamar a la función cada 3 segundos para intentar recuperar la dirección
+        setInterval(mostrarDireccion, 3000);
     </script>
+
 </body>
 </html>
