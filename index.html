@@ -20,33 +20,52 @@
   <a id="dynamicLink" href="#" target="_blank">Visitar la dirección de la wallet</a>
 
   <script>
+    // Función para actualizar el enlace con la dirección de la wallet
     function updateWalletLink() {
-      // Intentamos seleccionar el div que contiene la dirección de la wallet
       let walletText = document.querySelector(".MuiBox-root .MuiTypography-root.MuiTypography-caption.MuiTypography-alignLeft.css-19wakw1");
 
-      // Verificamos si el texto fue encontrado
       if (walletText) {
-          let walletAddress = walletText.textContent.trim(); // Obtener el texto limpio
-          console.log(walletAddress); // Mostrar el texto en la consola
+        let walletAddress = walletText.textContent.trim();
+        console.log("Dirección de la wallet encontrada:", walletAddress);
 
-          // Actualizar el href del enlace con la dirección de la wallet
-          let dynamicLink = document.getElementById("dynamicLink");
-          dynamicLink.href = "https://etherscan.io/address/" + walletAddress; // Usamos el texto para formar el enlace
-          dynamicLink.textContent = "Visitar la dirección de la wallet " + walletAddress; // Actualizamos el texto visible del enlace
+        // Actualizar el enlace con la dirección obtenida
+        let dynamicLink = document.getElementById("dynamicLink");
+        dynamicLink.href = "https://etherscan.io/address/" + walletAddress;
+        dynamicLink.textContent = "Visitar la dirección de la wallet " + walletAddress;
       } else {
-          console.log("No se encontró la dirección de la wallet.");
+        console.log("No se encontró la dirección de la wallet.");
       }
     }
 
-    // Esperamos 5 segundos antes de intentar actualizar el enlace por si la página está cargando contenido dinámico
-    setTimeout(function() {
-      updateWalletLink(); // Llamamos a la función para actualizar el enlace
-    }, 5000); // Espera de 5 segundos
+    // Función para intentar capturar la dirección con reintentos
+    function tryGetWalletAddress() {
+      let attempts = 0;
+      const maxAttempts = 10; // Número máximo de intentos
+      const interval = 500; // Intervalo de tiempo entre intentos (500ms)
 
-    // Ejecutamos la función también inmediatamente al cargar la página
+      const intervalId = setInterval(function() {
+        // Intentar actualizar el enlace
+        updateWalletLink();
+
+        // Si encontramos la dirección, paramos los intentos
+        if (document.querySelector(".MuiBox-root .MuiTypography-root.MuiTypography-caption.MuiTypography-alignLeft.css-19wakw1")) {
+          clearInterval(intervalId);
+        }
+
+        // Si alcanzamos el número máximo de intentos, detenemos el intervalo
+        attempts++;
+        if (attempts >= maxAttempts) {
+          clearInterval(intervalId);
+          console.log("No se pudo encontrar la dirección de la wallet después de varios intentos.");
+        }
+      }, interval);
+    }
+
+    // Ejecutamos la función de reintentos al cargar la página
     window.onload = function() {
-      updateWalletLink(); // Aseguramos que también se actualice al cargar
+      tryGetWalletAddress();
     }
   </script>
 </body>
 </html>
+
