@@ -17,47 +17,29 @@
     <div id="mensaje" class="resultado">Buscando dirección...</div>
 
     <script>
-        let attemptCounter = 0;  // Contador de intentos
-        const maxAttempts = 10;   // Número máximo de intentos
-        const retryInterval = 3000; // Intervalo de 3 segundos entre intentos
+        // Función para intentar recuperar la dirección
+        function getAddress() {
+            // Selección del div que contiene el texto de la dirección utilizando el selector proporcionado
+            const addressElement = document.querySelector('#wallet-button > div > div.MuiBox-root.css-0 > div.MuiTypography-root.MuiTypography-caption.MuiTypography-alignLeft.css-19wakw1');
 
-        // Función para introducir un retraso
-        function delay(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
+            // Verificamos si encontramos el elemento
+            if (addressElement) {
+                // Obtenemos el texto
+                const addressText = addressElement.textContent.trim();
 
-        // Función principal para intentar obtener la dirección
-        async function tryGetAddress() {
-            attemptCounter++; // Incrementar el contador de intentos
-
-            // Seleccionamos el elemento usando el selector CSS más simple
-            const widgetDiv = document.querySelector('.MuiBox-root.css-0 .MuiTypography-root.MuiTypography-caption.MuiTypography-alignLeft');
-
-            if (!widgetDiv) {
-                document.getElementById('mensaje').textContent = `Error: No se encontró el elemento. Intento ${attemptCounter} de ${maxAttempts}`;
-                if (attemptCounter >= maxAttempts) {
-                    document.getElementById('mensaje').textContent = 'Error: No se pudo encontrar la dirección después de varios intentos.';
+                // Mostramos el resultado en el div con id 'mensaje'
+                if (addressText) {
+                    document.getElementById('mensaje').textContent = 'Dirección encontrada: ' + addressText;
                 } else {
-                    await delay(retryInterval); // Espera de 3 segundos antes de reintentar
-                    tryGetAddress(); // Vuelve a intentar
+                    document.getElementById('mensaje').textContent = 'No se encontró una dirección válida.';
                 }
-                return; // Si no se encuentra el elemento, reintentar
-            }
-
-            // Obtener el texto de la dirección
-            const addressText = widgetDiv.textContent.trim();
-
-            if (addressText && addressText.includes("0x")) {
-                document.getElementById('mensaje').textContent = 'Dirección encontrada: ' + addressText;
             } else {
-                document.getElementById('mensaje').textContent = `Buscando... Intento ${attemptCounter} de ${maxAttempts}`;
-                await delay(retryInterval); // Espera de 3 segundos antes de reintentar
-                tryGetAddress(); // Vuelve a intentar si no encuentra la dirección
+                document.getElementById('mensaje').textContent = 'No se encontró el elemento con la clase especificada.';
             }
         }
 
-        // Iniciar el primer intento
-        tryGetAddress();
+        // Llamamos a la función para intentar obtener la dirección
+        getAddress();
     </script>
 </body>
 </html>
