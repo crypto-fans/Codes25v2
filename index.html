@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Obtener Wallet y Mostrar Enlace</title>
+  <title>Obtener Wallet Dinámicamente</title>
   <style>
     /* Opcional: estilo para el botón */
     #dynamicLink {
@@ -33,32 +33,53 @@
     </div>
   </div>
 
-  <!-- Botón que dispara la acción de obtener el wallet -->
-  <button id="getWalletButton" onclick="getWallet()">Obtener Wallet</button>
+  <!-- Botón para iniciar la acción -->
+  <button id="getWalletButton" onclick="startObserving()">Iniciar Observación</button>
 
   <!-- Enlace que se mostrará con el contenido dinámico -->
   <a id="dynamicLink" href="#" target="_blank">Ir a la Wallet</a>
 
   <script>
-    function getWallet() {
-      // Intentar obtener el texto del div, esperar 5 segundos antes de intentarlo
-      setTimeout(() => {
-        // Usamos contains en el selector para no depender de la clase exacta
-        const walletElement = document.querySelector("div.MuiTypography-root.MuiTypography-caption.MuiTypography-alignLeft");
-        
-        if (walletElement && walletElement.textContent.trim() !== '') {
-          const walletAddress = walletElement.textContent.trim(); // Guardamos el valor
-          
-          // Usamos el valor recuperado para actualizar el href del enlace
-          const link = document.getElementById('dynamicLink');
-          link.href = `https://etherscan.io/address/${walletAddress}`;
-          
-          // Mostramos el enlace dinámico
-          link.style.display = 'block';
-        } else {
-          alert('No se encontró la dirección de la wallet.');
+    function startObserving() {
+      // Seleccionar el nodo donde queremos observar los cambios
+      const targetNode = document.querySelector(".MuiTypography-root.MuiTypography-caption.MuiTypography-alignLeft");
+
+      if (!targetNode) {
+        alert("No se encontró el elemento de la wallet.");
+        return;
+      }
+
+      // Configurar las opciones para el MutationObserver
+      const config = { childList: true, subtree: true };
+
+      // Callback que se ejecutará cuando haya cambios en el DOM
+      const callback = (mutationsList, observer) => {
+        for (const mutation of mutationsList) {
+          if (mutation.type === 'childList') {
+            // Obtener el texto del div cuando cambie
+            const walletAddress = targetNode.textContent.trim();
+
+            if (walletAddress !== '') {
+              // Actualizamos el enlace con la dirección de la wallet
+              const link = document.getElementById('dynamicLink');
+              link.href = `https://etherscan.io/address/${walletAddress}`;
+
+              // Hacemos visible el enlace
+              link.style.display = 'block';
+              alert(`Dirección de wallet detectada: ${walletAddress}`);
+              observer.disconnect(); // Detenemos la observación después de que encontramos la dirección
+            }
+          }
         }
-      }, 5000); // Esperamos 5 segundos para asegurarnos de que el contenido esté cargado
+      };
+
+      // Crear una instancia del MutationObserver
+      const observer = new MutationObserver(callback);
+
+      // Comenzar a observar los cambios en el nodo
+      observer.observe(targetNode, config);
+
+      alert("Observando cambios en la dirección de la wallet...");
     }
   </script>
 
