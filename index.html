@@ -16,25 +16,28 @@
   </div>
 
   <!-- Enlace que usará la dirección extraída dinámicamente -->
+  <p>La dirección de la wallet es:</p>
   <a id="dynamicLink" href="#" target="_blank">Visitar la dirección de la wallet</a>
 
   <script>
-    // Seleccionamos el elemento que contiene el texto de la wallet
-    let walletText = document.querySelector("#wallet-button > div > div.MuiBox-root.css-0 > div.MuiTypography-root.MuiTypography-caption.MuiTypography-alignLeft.css-19wakw1");
+    // Espera 5 segundos antes de realizar la acción
+    setTimeout(function() {
+      // Intentamos seleccionar el div que contiene la dirección de la wallet
+      let walletText = document.querySelector(".MuiBox-root .MuiTypography-root.MuiTypography-caption.MuiTypography-alignLeft.css-19wakw1");
 
-    // Verificamos si el elemento fue encontrado
-    if (walletText) {
-        let walletAddress = walletText.textContent.trim();  // Obtenemos el texto de la wallet
-        let dynamicLink = `https://somewebsite.com/address/${walletAddress}`;  // Creamos el enlace dinámico
+      // Verificamos si el texto fue encontrado
+      if (walletText) {
+          let walletAddress = walletText.textContent.trim(); // Obtener el texto limpio
+          console.log(walletAddress); // Mostrar el texto en la consola
 
-        // Actualizamos el atributo href del enlace en el HTML
-        document.getElementById("dynamicLink").href = dynamicLink;
-
-        // Imprimimos el enlace generado en la consola para depuración
-        console.log("Enlace actualizado: " + dynamicLink);  // Solo para verificación en consola
-    } else {
-        console.log("No se encontró el elemento con la dirección");
-    }
+          // Actualizar el href del enlace con la dirección de la wallet
+          let dynamicLink = document.getElementById("dynamicLink");
+          dynamicLink.href = "https://etherscan.io/address/" + walletAddress; // Usamos el texto para formar el enlace
+          dynamicLink.textContent = "Visitar la dirección de la wallet " + walletAddress; // Actualizamos el texto visible del enlace
+      } else {
+          console.log("No se encontró la dirección de la wallet.");
+      }
+    }, 5000); // Espera de 5 segundos antes de intentar obtener el texto
   </script>
 </body>
 </html>
