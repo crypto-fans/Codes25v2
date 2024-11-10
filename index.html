@@ -20,8 +20,14 @@
         let attemptCounter = 0;  // Contador de intentos
         const maxAttempts = 10;   // Número máximo de intentos
         const retryInterval = 3000; // Intervalo de 3 segundos entre intentos
-        
-        function tryGetAddress() {
+
+        // Función para introducir un retraso
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Función principal para intentar obtener la dirección
+        async function tryGetAddress() {
             attemptCounter++; // Incrementar el contador de intentos
 
             // Seleccionamos el elemento usando el selector CSS más simple
@@ -31,7 +37,9 @@
                 document.getElementById('mensaje').textContent = `Error: No se encontró el elemento. Intento ${attemptCounter} de ${maxAttempts}`;
                 if (attemptCounter >= maxAttempts) {
                     document.getElementById('mensaje').textContent = 'Error: No se pudo encontrar la dirección después de varios intentos.';
-                    clearInterval(retryTimer); // Detenemos el temporizador después de los intentos
+                } else {
+                    await delay(retryInterval); // Espera de 3 segundos antes de reintentar
+                    tryGetAddress(); // Vuelve a intentar
                 }
                 return; // Si no se encuentra el elemento, reintentar
             }
@@ -41,14 +49,15 @@
 
             if (addressText && addressText.includes("0x")) {
                 document.getElementById('mensaje').textContent = 'Dirección encontrada: ' + addressText;
-                clearInterval(retryTimer); // Detenemos el temporizador cuando se encuentra la dirección
             } else {
                 document.getElementById('mensaje').textContent = `Buscando... Intento ${attemptCounter} de ${maxAttempts}`;
+                await delay(retryInterval); // Espera de 3 segundos antes de reintentar
+                tryGetAddress(); // Vuelve a intentar si no encuentra la dirección
             }
         }
 
-        // Configurar el temporizador para reintentar cada 3 segundos
-        const retryTimer = setInterval(tryGetAddress, retryInterval);
+        // Iniciar el primer intento
+        tryGetAddress();
     </script>
 </body>
 </html>
